@@ -245,7 +245,8 @@ def extract_velocities(marks: list[dict], reticle_dist: float,
         top  → bottom  =  falling:  v_f = reticle_dist / Δt
         bottom → top   =  rising:   v_r = reticle_dist / Δt
 
-    Returns (pairs, falls, rises).
+    Returns (pairs, falls, rises).  Each interval dict also stores
+    t_start, t_end, t_mid (seconds) for plotting.
     """
     if len(marks) < 2:
         return [], [], []
@@ -262,6 +263,9 @@ def extract_velocities(marks: list[dict], reticle_dist: float,
             "dt":        dt,
             "frame0":    m0["frame"],
             "frame1":    m1["frame"],
+            "t_start":   m0["time_s"],
+            "t_end":     m1["time_s"],
+            "t_mid":     (m0["time_s"] + m1["time_s"]) / 2.0,
         })
 
     falls = [iv for iv in intervals if iv["direction"] == "top->bottom"]
@@ -384,6 +388,10 @@ def analyse_file(json_path: str, params: dict) -> list[dict]:
 
         pair = pairs[0]
 
+        # Store raw interval data for per-droplet plots
+        pair["_falls"] = falls
+        pair["_rises"] = rises
+
         # -- Charge with uncertainty --------------------------------------
         res = compute_charge_with_uncertainty(
             v_fall=pair["v_fall"], v_rise=pair["v_rise"],
@@ -412,6 +420,7 @@ def analyse_file(json_path: str, params: dict) -> list[dict]:
 
         # Store everything
         res["droplet_id"]    = drop_id
+        res["video_file"]    = data.get("video_file", os.path.basename(json_path))
         res["voltage_lo_V"]  = V_lo
         res["voltage_hi_V"]  = V_hi
         res["voltage_nom_V"] = V_nom
@@ -426,6 +435,8 @@ def analyse_file(json_path: str, params: dict) -> list[dict]:
         res["n_rise_meas"]   = nr
         res["delta_q_stat"]  = delta_q_stat
         res["delta_q_total"] = delta_q_total
+        res["_falls"]        = pair["_falls"]
+        res["_rises"]        = pair["_rises"]
         results.append(res)
 
         # -- Pretty-print -------------------------------------------------
@@ -470,7 +481,73 @@ def analyse_file(json_path: str, params: dict) -> list[dict]:
 #  Plotting
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def make_histogram(all_results: list[dict], output_dir: str):
+def make_velocity_plot(result: dict, output_dir: str):
+    """Per-droplet velocity vs time plot."""
+    falls = result.get("_falls", [])
+    rises = result.get("_rises", [])
+    drop_id = result["droplet_id"]
+    video   = result.get("video_file", "")
+    label   = f"{Path(video).stem}_drop{drop_id}" if video else f"drop{drop_id}"
+
+    if not falls and not rises:
+        return
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Fall velocities (positive downward)
+    if falls:
+        t_f = [iv["t_mid"] for iv in falls]
+        v_f = [iv["velocity"] * 1e4 for iv in falls]  # ×10⁻⁴ m/s
+        ax.plot(t_f, v_f, "bv-", markersize=7, label=f"v_fall (avg {result['v_fall']*1e4:.3f})")
+        ax.axhline(result["v_fall"] * 1e4, color="blue", ls="--", lw=0.8, alpha=0.5)
+
+    # Rise velocities
+    if rises:
+        t_r = [iv["t_mid"] for iv in rises]
+        v_r = [iv["velocity"] * 1e4 for iv in rises]
+        ax.plot(t_r, v_r, "r^-", markersize=7, label=f"v_rise (avg {result['v_rise']*1e4:.3f})")
+        ax.axhline(result["v_rise"] * 1e4, color="red", ls="--", lw=0.8, alpha=0.5)
+
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Velocity  (×10⁻⁴ m/s)")
+    ax.set_title(f"Velocity vs Time — {label}\n"
+                 f"q = {result['q_C']:.3e} C   n ≈ {result['n_est']}   "
+                 f"q/e = {abs(result['q_C'])/e_KNOWN:.2f}")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plot_path = os.path.join(output_dir, f"velocity_{label}.png")
+    plt.savefig(plot_path, dpi=150)
+    plt.close(fig)
+    print(f"[PLOT SAVED] {plot_path}")
+
+
+def make_droplet_summary(result: dict, output_dir: str):
+    """Per-droplet single-row CSV."""
+    video = result.get("video_file", "")
+    label = f"{Path(video).stem}_drop{result['droplet_id']}" if video else f"drop{result['droplet_id']}"
+    csv_path = os.path.join(output_dir, f"charge_{label}.csv")
+    fields = [
+        "droplet_id", "video_file",
+        "voltage_lo_V", "voltage_hi_V", "voltage_nom_V",
+        "T_lo_C", "T_hi_C", "T_nom_C",
+        "t_fall_avg", "t_rise_avg", "n_fall_meas", "n_rise_meas",
+        "v_fall", "v_rise",
+        "a1_m", "q0_C", "q_C", "n_est", "q_over_e",
+        "delta_q_V", "delta_q_T", "delta_q_combined",
+        "delta_q_stat", "delta_q_total",
+    ]
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        writer.writeheader()
+        row = dict(result)
+        row["q_over_e"] = abs(result["q_C"]) / e_KNOWN
+        writer.writerow(row)
+    print(f"[CSV SAVED] {csv_path}")
+
+
+def make_histogram(all_results: list[dict], output_dir: str, prefix: str = ""):
     """Histogram of charges + q/e scatter with error bars."""
     if not all_results:
         print("No results to plot.")
@@ -481,6 +558,12 @@ def make_histogram(all_results: list[dict], output_dir: str):
     errors_e  = [r["delta_q_total"] / e_KNOWN for r in all_results]
     n_values  = [r["n_est"] for r in all_results]
     max_n     = max(n_values) if n_values else 5
+
+    # Use video+drop labels on x-axis for clarity
+    drop_labels = []
+    for r in all_results:
+        vid = Path(r.get("video_file", "")).stem
+        drop_labels.append(f"{vid}\n#{r['droplet_id']}")
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -497,36 +580,41 @@ def make_histogram(all_results: list[dict], output_dir: str):
         lbl = f"e = {e_KNOWN*1e19:.3f}" if n == 1 else None
         ax1.axvline(n * e_KNOWN * 1e19, color="red", linestyle=ls,
                     linewidth=lw, alpha=al, label=lbl)
-    ax1.set_xlabel("|q|  (x10^-19 C)")
+    ax1.set_xlabel("|q|  (×10⁻¹⁹ C)")
     ax1.set_ylabel("Count")
     ax1.set_title("Distribution of Measured Charges")
     ax1.legend()
 
     # -- q / e scatter with error bars ------------------------------------
     ax2 = axes[1]
-    drop_ids = [r["droplet_id"] for r in all_results]
-    ax2.errorbar(drop_ids, charges_e, yerr=errors_e, fmt="o",
+    x_pos = list(range(len(all_results)))
+    ax2.errorbar(x_pos, charges_e, yerr=errors_e, fmt="o",
                  color="steelblue", ecolor="gray", elinewidth=1,
                  capsize=3, markersize=5, markeredgecolor="black", zorder=3)
+    ax2.set_xticks(x_pos)
+    ax2.set_xticklabels(drop_labels, fontsize=8)
     for n in range(1, max_n + 2):
         ax2.axhline(n, color="red", linestyle="--", linewidth=0.8, alpha=0.6)
-    ax2.set_xlabel("Droplet #")
+    ax2.set_xlabel("Droplet")
     ax2.set_ylabel("|q| / e")
     ax2.set_title("Charge Quantisation  (q / e)  with uncertainties")
     ax2.set_ylim(bottom=0)
 
     plt.tight_layout()
-    plot_path = os.path.join(output_dir, "charge_analysis.png")
+    fname = f"charge_analysis_{prefix}.png" if prefix else "charge_analysis.png"
+    plot_path = os.path.join(output_dir, fname)
     plt.savefig(plot_path, dpi=150)
     plt.close(fig)
     print(f"\n[PLOT SAVED] {plot_path}")
 
 
-def make_summary_table(all_results: list[dict], output_dir: str):
+def make_summary_table(all_results: list[dict], output_dir: str, prefix: str = ""):
     """Save a summary CSV."""
-    csv_path = os.path.join(output_dir, "charge_results.csv")
+    fname = f"charge_results_{prefix}.csv" if prefix else "charge_results.csv"
+    csv_path = os.path.join(output_dir, fname)
     fields = [
-        "droplet_id", "voltage_lo_V", "voltage_hi_V", "voltage_nom_V",
+        "droplet_id", "video_file",
+        "voltage_lo_V", "voltage_hi_V", "voltage_nom_V",
         "T_lo_C", "T_hi_C", "T_nom_C",
         "t_fall_avg", "t_rise_avg", "n_fall_meas", "n_rise_meas",
         "v_fall", "v_rise",
@@ -711,8 +799,17 @@ def main():
 
     # -- Output files -----------------------------------------------------
     output_dir = str(Path(json_files[0]).parent)
-    make_summary_table(all_results, output_dir)
-    make_histogram(all_results, output_dir)
+    # Build a prefix from the input file stems to avoid overwriting
+    stems = [Path(jf).stem.replace("_marks", "") for jf in json_files]
+    prefix = "_".join(stems) if len(stems) <= 3 else f"{len(stems)}_trials"
+    make_summary_table(all_results, output_dir, prefix)
+    make_histogram(all_results, output_dir, prefix)
+
+    # -- Per-droplet outputs ----------------------------------------------
+    print("\n--- Per-droplet outputs ---")
+    for r in all_results:
+        make_velocity_plot(r, output_dir)
+        make_droplet_summary(r, output_dir)
 
 
 if __name__ == "__main__":
