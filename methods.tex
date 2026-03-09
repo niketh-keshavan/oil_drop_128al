@@ -436,70 +436,14 @@ in 0.05\% agreement with the CODATA 2018 value. Per-cycle charge analysis identi
 
 \section{Discussion}
 
-\subsection{Assessment of Experimental Precision and Accuracy}
+Our mean-based result of $e = (1.603 \pm 0.051) \times 10^{-19}$~C agrees with the CODATA value to within 0.05\%, well within the 3.2\% measurement uncertainty. This accuracy exceeded expectations given the crude velocity measurements---manual turning-point identification at 16.68~fps over a single 0.500~mm reticle division---and confirms the robustness of the Millikan method even with modest instrumentation. The precision, however, is poor: a 3.2\% fractional uncertainty, with individual droplet uncertainties averaging 9.7\% (ranging from 4.8\% for T3D2, which maintained a single stable charge state, to 13.6\% for T2D1, which underwent four charge transitions).
 
-Our mean-based result of $e = (1.603 \pm 0.051) \times 10^{-19}$~C agrees with the CODATA value to within 0.05\%, which is well within the 3.2\% measurement uncertainty. This level of \emph{accuracy} exceeded our expectations given the relatively crude nature of the velocity measurements: manual frame-by-frame identification of turning points at only 16.68~fps, with each oscillation traversing just one 0.500~mm reticle division. The agreement is partly fortuitous---the weighted average benefits from partial cancellation of positive and negative deviations across the six droplets---but it nonetheless confirms that the Millikan oil drop method is robust even with modest instrumentation.
+The error budget is overwhelmingly dominated by velocity scatter ($> 99.9\%$ of total variance), with systematic contributions from the applied voltage (0.27\%) and temperature (0.05\%) entirely negligible. Improving the voltage supply, thermometry, or plate separation would not meaningfully improve the result; the path to better precision runs entirely through the velocity measurement.
 
-The \emph{precision}, however, is poor by modern standards. The 3.2\% fractional uncertainty on $e$ is five orders of magnitude worse than the CODATA value (exact by definition since 2019). Individual droplet charge uncertainties range from 4.8\% (T3D2) to 13.6\% (T2D1), with an average of 9.7\%. This wide range is itself informative: T3D2 maintained a single stable charge state throughout its recording ($n = 12$, CV of rise velocities = 4.5\%), while T2D1 underwent four charge state transitions ($n = 4 \to 5 \to 7 \to 8$, CV of rise velocities = 41.1\%). The per-cycle charge analysis confirms that most of the ``velocity scatter'' reported in the uncertainty budget is not random noise at all---it is a physical signal of mid-oscillation charge changes.
+Naively, doubling the number of oscillation cycles would reduce the statistical uncertainty by $\sqrt{2}$, bringing the final uncertainty from 3.2\% to $\sim 2.3\%$. However, our per-cycle analysis reveals that 5 of 6 droplets experienced charge state changes within $\sim 30$~s, so longer recordings would mix more charge states together, violating the $\sqrt{N}$ assumption and potentially \emph{worsening} the mean-based estimate. The correct approach---per-cycle charge state resolution as developed in Section~4.2---would benefit from longer recordings by accumulating more cycles per state and more transition-based estimates of $e$, but only if the analysis explicitly accounts for discrete charge changes rather than blindly averaging.
 
-\subsection{Error Budget and Dominant Uncertainty Sources}
+The velocity uncertainty has two components that could be targeted for improvement. First, the timing resolution: at 16.68~fps, the $\pm 1$~frame turning-point uncertainty gives $\sigma_t \approx 85$~ms, which for fast rise intervals ($\sim 1.6$~s) corresponds to a 5.3\% fractional error. Recording at 60~fps would reduce this by a factor of 3.6. Second, the position resolution: each oscillation traverses only one reticle division (0.500~mm) with an estimated 5\% fractional distance uncertainty. Traversing multiple divisions or employing sub-pixel centroid tracking could reduce this substantially. Automated droplet tracking---fitting continuous position-time trajectories rather than measuring two discrete turning points---would use all available frames and could plausibly bring velocity uncertainties below 1\%.
 
-Table~7 decomposes the total charge uncertainty into its contributing sources.
-
-\begin{table}[h!]
-    \centering
-    \caption{Uncertainty Budget: Average Fractional Contributions to $\delta q/q$}
-    \vspace{0.1in}
-    \begin{tabular}{|l|c|c|c|}
-    \hline
-    \textbf{Source} & \textbf{Type} & \textbf{Avg.\ $\delta q/q$} & \textbf{Variance fraction} \\
-    \hline
-    Velocity scatter       & Random     & $9.7\%$ & $99.9\%$ \\
-    Applied voltage        & Systematic & $0.27\%$ & $0.08\%$ \\
-    Temperature            & Systematic & $0.05\%$ & $< 0.01\%$ \\
-    \hline
-    \textbf{Combined}      &            & $\mathbf{9.7\%}$ & $\mathbf{100\%}$ \\
-    \hline
-    \end{tabular}
-\end{table}
-
-The measurement is overwhelmingly dominated by velocity scatter, which accounts for $> 99.9\%$ of the total variance. Systematic uncertainties from the applied voltage ($0.27\%$) and temperature ($0.05\%$) are negligible by comparison. This has a clear implication: \emph{no improvement to the voltage supply, thermometry, or plate separation measurement would meaningfully improve the result} at the current level of velocity precision. The path to better results runs entirely through the velocity measurement.
-
-\subsection{Effect of Increased Measurement Time}
-
-If the droplet charge were truly constant during a recording, the statistical uncertainty on the mean velocity would scale as $\sigma_{\bar{v}} = \sigma_v / \sqrt{N}$, where $N$ is the number of oscillation cycles. Since $\delta q / q \propto \sigma_{\bar{v}} / \bar{v}$, doubling the number of cycles (from $\sim 5$ to $\sim 10$, roughly doubling the recording time from $\sim 35$~s to $\sim 70$~s) would reduce the statistical uncertainty by a factor of $\sqrt{2} \approx 1.4$, bringing the average per-droplet uncertainty from $\sim 9.7\%$ to $\sim 6.9\%$ and the final uncertainty on $e$ from $3.2\%$ to $\sim 2.3\%$.
-
-However, our per-cycle analysis reveals a fundamental complication: 5 of 6 droplets experienced charge state changes within $\sim 30$~s of recording. Longer recordings would capture \emph{more} charge transitions, not fewer, and naively averaging over a longer time series would mix more charge states together, potentially \emph{worsening} the accuracy of the mean-based estimate. The $\sqrt{N}$ improvement assumes independent, identically distributed measurements---an assumption that is violated when the underlying charge is changing.
-
-The correct approach for extended recordings is the per-cycle charge analysis developed in Section~4.2: resolve each charge state individually, compute $q/n$ per state, and weight by the number of cycles in each state. Under this framework, longer recordings \emph{would} help, because more cycles per charge state would reduce the per-state uncertainty, and more observed transitions would provide additional independent estimates of $e$ via the $|\Delta q|/|\Delta n|$ method. The key is that the analysis must account for charge state changes rather than blindly averaging.
-
-\subsection{Improving Velocity Measurement Precision}
-
-The dominant velocity uncertainty has two components: timing resolution and position resolution.
-
-\textbf{Timing resolution.} At 16.68~fps, the $\pm 1$~frame uncertainty at each turning point gives a per-interval timing uncertainty of $\sigma_t = \sqrt{2}/f_{\text{rate}} \approx 85$~ms. For a fast rise interval ($\sim 1.6$~s in T2D2), this corresponds to a 5.3\% fractional uncertainty---comparable to the total velocity scatter for the best droplets. Recording at 60~fps (readily achievable with modern USB cameras) would reduce this to $\sigma_t \approx 24$~ms, a factor of 3.6 improvement. At 120~fps, $\sigma_t \approx 12$~ms, approaching the regime where other error sources become relevant. Higher frame rates would also make turning point identification less ambiguous, reducing the systematic component of timing error.
-
-\textbf{Position resolution.} Each oscillation traverses one reticle division (0.500~mm), with an estimated position uncertainty of $\pm 0.025$~mm (5.0\% fractional). This could be improved by (a) traversing multiple reticle divisions per oscillation, which increases$~d$ and reduces the fractional distance error, or (b) using sub-pixel tracking algorithms to determine the droplet centroid position with higher precision than visual inspection allows. Modern centroid-fitting algorithms routinely achieve sub-pixel accuracy ($< 0.1$ pixel), which, combined with appropriate magnification, could reduce the position uncertainty by an order of magnitude.
-
-\textbf{Automated tracking.} Replacing manual frame-by-frame annotation with automated droplet tracking (e.g., via background subtraction and centroid fitting on every frame) would eliminate the turning-point identification paradigm entirely. Instead of measuring $v = d/\Delta t$ from two discrete points, one could fit the entire position-time trajectory to extract velocities from a continuous kinematic model. This would use all available frames, not just turning points, and would suppress the effect of any single misidentified frame. Combined with higher frame rates, automated tracking could plausibly reduce velocity uncertainties to $< 1\%$, at which point systematic errors in voltage and temperature would begin to matter.
-
-\subsection{Mitigating Mid-Oscillation Charge Changes}
-
-The most physically interesting source of error is the stray ionization that changes the droplet charge during recording. Our per-cycle analysis identifies these events after the fact, but two experimental modifications could reduce their impact:
-
-\begin{enumerate}
-    \item \textbf{Shielding the apparatus.} The charge changes are caused by ambient ionizing radiation (cosmic rays, natural radioactivity) creating ion pairs near the droplet. Enclosing the apparatus in a lead-lined enclosure or performing the experiment in a low-background environment would reduce the rate of stray ionization events, allowing longer uninterrupted charge-state plateaus and more precise per-state charge measurements.
-    \item \textbf{Faster oscillation cycling.} Reducing the time per oscillation cycle (by using a stronger electric field or smaller droplets) would allow more cycles to be completed before a charge change occurs. If a typical charge change happens every $\sim 10$~s (as suggested by our data), and each cycle takes $\sim 5$~s, we capture only $\sim 2$ cycles per charge state on average. Reducing the cycle time to $\sim 1$~s would yield $\sim 10$ cycles per state, greatly improving per-state statistics.
-\end{enumerate}
-
-\subsection{Alternative Experimental Approaches}
-
-Several modifications to the basic Millikan experiment could yield substantially better results:
-
-\textbf{Balanced-drop method.} Rather than measuring both rise and fall velocities, one can adjust the voltage to \emph{suspend} the droplet motionless ($v = 0$), so that $qE = mg$ exactly. This eliminates the velocity measurement entirely and determines $q$ directly from the suspension voltage. The precision then depends on how accurately the voltage can be tuned and how stably the droplet can be held, rather than on velocity measurements.
-
-\textbf{Single-electron sensitivity.} Using droplets with very small charges ($n = 1$ or $2$) would simplify the quantization analysis, since the integer assignment becomes unambiguous. This requires selecting very slowly rising droplets (small $q$) and demands higher velocity precision to resolve the correspondingly small rise velocities, but it eliminates the difficulty of assigning large quantum numbers where the fractional spacing between adjacent $n$ values is small (e.g., $q/e = 12.01$ vs.\ 13 is a 7.6\% difference, while $q/e = 1.0$ vs.\ 2 is a 50\% difference).
-
-\textbf{Modern detector technology.} Replacing the optical microscope with a CCD/CMOS camera system with calibrated magnification and automated centroid tracking, combined with a high-stability voltage source ($\delta V / V < 0.01\%$), digital temperature control, and environmental shielding, could plausibly achieve per-droplet charge uncertainties of $< 0.5\%$, approaching the systematic floor set by uncertainties in the oil density and Cunningham slip correction constants.
+The most physically interesting error source is mid-oscillation charge changes from ambient ionizing radiation. Shielding the apparatus (e.g., a lead-lined enclosure) would reduce the rate of stray ionization, while faster oscillation cycling (stronger fields or smaller droplets) would allow more cycles per charge state before a transition occurs. Alternatively, the balanced-drop method---adjusting the voltage to suspend the droplet motionless so that $qE = mg$---eliminates velocity measurement entirely and determines charge directly from the suspension voltage. Selecting droplets with small charges ($n = 1$ or $2$) would also simplify integer assignment, since the fractional spacing between adjacent $n$ values is much larger at low $n$.
 
 \end{document}
