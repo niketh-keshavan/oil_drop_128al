@@ -1,0 +1,141 @@
+{
+  "video_file": "TRIAL_3.mp4",
+  "fps": 16.6781,
+  "total_frames": 1730,
+  "droplets": [
+    {
+      "id": 1,
+      "voltage_lo_V": null,
+      "voltage_hi_V": null,
+      "marks": [
+        {
+          "type": "bottom",
+          "frame": 44,
+          "time_s": 2.6382
+        },
+        {
+          "type": "top",
+          "frame": 144,
+          "time_s": 8.6341
+        },
+        {
+          "type": "bottom",
+          "frame": 196,
+          "time_s": 11.7519
+        },
+        {
+          "type": "top",
+          "frame": 294,
+          "time_s": 17.6279
+        },
+        {
+          "type": "bottom",
+          "frame": 345,
+          "time_s": 20.6858
+        },
+        {
+          "type": "top",
+          "frame": 455,
+          "time_s": 27.2813
+        },
+        {
+          "type": "bottom",
+          "frame": 507,
+          "time_s": 30.3992
+        },
+        {
+          "type": "top",
+          "frame": 621,
+          "time_s": 37.2345
+        },
+        {
+          "type": "bottom",
+          "frame": 672,
+          "time_s": 40.2924
+        },
+        {
+          "type": "top",
+          "frame": 722,
+          "time_s": 43.2903
+        },
+        {
+          "type": "bottom",
+          "frame": 778,
+          "time_s": 46.648
+        },
+        {
+          "type": "top",
+          "frame": 841,
+          "time_s": 50.4254
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "voltage_lo_V": null,
+      "voltage_hi_V": null,
+      "marks": [
+        {
+          "type": "top",
+          "frame": 1075,
+          "time_s": 64.4558
+        },
+        {
+          "type": "bottom",
+          "frame": 1121,
+          "time_s": 67.2139
+        },
+        {
+          "type": "top",
+          "frame": 1167,
+          "time_s": 69.972
+        },
+        {
+          "type": "bottom",
+          "frame": 1212,
+          "time_s": 72.6702
+        },
+        {
+          "type": "top",
+          "frame": 1262,
+          "time_s": 75.6681
+        },
+        {
+          "type": "bottom",
+          "frame": 1308,
+          "time_s": 78.4262
+        },
+        {
+          "type": "top",
+          "frame": 1358,
+          "time_s": 81.4242
+        },
+        {
+          "type": "bottom",
+          "frame": 1413,
+          "time_s": 84.7219
+        },
+        {
+          "type": "top",
+          "frame": 1460,
+          "time_s": 87.54
+        },
+        {
+          "type": "bottom",
+          "frame": 1507,
+          "time_s": 90.3581
+        },
+        {
+          "type": "top",
+          "frame": 1558,
+          "time_s": 93.416
+        },
+        {
+          "type": "bottom",
+          "frame": 1608,
+          "time_s": 96.4139
+        }
+      ]
+    }
+  ]
+}
