@@ -216,13 +216,13 @@ for t in (1, 2, 3):
         print(f"    Per-cycle charges (q/e):")
         for i, c in enumerate(pc):
             print(f"      cycle {i}: v_r={c['v_rise']*1e3:.4f} mm/s  "
-                  f"q={c['q']:.3e} C  q/e={c['qe']:.2f}  n≈{c['n_est']}")
+                  f"q={c['q']:.3e} C  q/e={c['qe']:.2f}  n~{c['n_est']}")
 
         print(f"    Identified {len(states)} charge state(s):")
         for j, st in enumerate(states):
-            print(f"      State {j}: n≈{st['n_est']} (q/e={st['qe']:.2f})  "
+            print(f"      State {j}: n~{st['n_est']} (q/e={st['qe']:.2f})  "
                   f"{st['n_cycles']} cycle(s)  "
-                  f"q={st['mean_q']:.3e}±{st['std_q']:.1e} C")
+                  f"q={st['mean_q']:.3e}+-{st['std_q']:.1e} C")
 
         # Record transitions between consecutive charge states
         for j in range(1, len(states)):
@@ -233,8 +233,8 @@ for t in (1, 2, 3):
                 "from_n": states[j-1]["n_est"], "to_n": states[j]["n_est"],
                 "dn": dn, "dq": dq,
             })
-            print(f"      Transition: n={states[j-1]['n_est']} → {states[j]['n_est']}  "
-                  f"(Δn={dn:+d}, Δq={dq:+.3e} C)")
+            print(f"      Transition: n={states[j-1]['n_est']} -> {states[j]['n_est']}  "
+                  f"(dn={dn:+d}, dq={dq:+.3e} C)")
 
 # ── Compile charge data from CSVs (original mean-based analysis) ─────────────
 
@@ -262,7 +262,7 @@ for t in (1, 2, 3):
             "n": n, "qe": q / e_KNOWN, "a1_um": a1 * 1e6,
             "v_fall": vf, "v_rise": vr,
         })
-        print(f"  T{t}D{did}: q = {q:.4e} C  ± {dq:.2e}  n={n}  q/e={q/e_KNOWN:.3f}")
+        print(f"  T{t}D{did}: q = {q:.4e} C  +- {dq:.2e}  n={n}  q/e={q/e_KNOWN:.3f}")
 
 # ── Elementary charge from CHARGE STATES (per-cycle analysis) ─────────────────
 
@@ -281,7 +281,7 @@ for t in (1, 2, 3):
                 "n": st["n_est"], "q": st["mean_q"], "dq": st["std_q"],
                 "n_cycles": st["n_cycles"], "qe": st["qe"],
             })
-            print(f"  T{t}D{d['drop_id']}: state n≈{st['n_est']}  "
+            print(f"  T{t}D{d['drop_id']}: state n~{st['n_est']}  "
                   f"q={st['mean_q']:.4e} C  ({st['n_cycles']} cycles)")
 
 # e from q/n for each state (weighted by 1/σ²; use dq if available, else rough estimate)
@@ -300,26 +300,26 @@ e_states_weighted = float(np.average(e_state_ests, weights=w))
 e_states_err = 1.0 / math.sqrt(float(np.sum(w)))
 pct_states = abs(e_states_weighted - e_KNOWN) / e_KNOWN * 100
 
-print(f"\n  e (charge-state weighted avg) = ({e_states_weighted:.4e} ± {e_states_err:.2e}) C")
+print(f"\n  e (charge-state weighted avg) = ({e_states_weighted:.4e} +- {e_states_err:.2e}) C")
 print(f"  CODATA                        = {e_KNOWN:.6e} C")
 print(f"  Percent error                 = {pct_states:.2f}%")
 
 # ── e from transition differences ────────────────────────────────────────────
 
-print(f"\n{'='*80}\ne FROM CHARGE STATE TRANSITIONS (Δq/Δn)\n{'='*80}")
+print(f"\n{'='*80}\ne FROM CHARGE STATE TRANSITIONS (dq/dn)\n{'='*80}")
 e_trans_ests = []
 for tr in all_transitions:
     if tr["dn"] != 0:
         e_tr = abs(tr["dq"]) / abs(tr["dn"])
         e_trans_ests.append(e_tr)
-        print(f"  T{tr['trial']}D{tr['drop_id']}: n {tr['from_n']}→{tr['to_n']}  "
-              f"|Δq|/|Δn| = {e_tr:.4e} C  (= {e_tr/e_KNOWN:.3f} e)")
+        print(f"  T{tr['trial']}D{tr['drop_id']}: n {tr['from_n']}->{tr['to_n']}  "
+              f"|dq|/|dn| = {e_tr:.4e} C  (= {e_tr/e_KNOWN:.3f} e)")
 
 if e_trans_ests:
     e_trans_mean = np.mean(e_trans_ests)
     e_trans_std  = np.std(e_trans_ests, ddof=1) if len(e_trans_ests) > 1 else 0
     pct_trans = abs(e_trans_mean - e_KNOWN) / e_KNOWN * 100
-    print(f"\n  e (from transitions) = ({e_trans_mean:.4e} ± {e_trans_std:.2e}) C")
+    print(f"\n  e (from transitions) = ({e_trans_mean:.4e} +- {e_trans_std:.2e}) C")
     print(f"  Percent error        = {pct_trans:.2f}%")
 
 # ── Use original mean-based for overall result (backward compat) ─────────────
@@ -341,7 +341,7 @@ for t in (1, 2, 3):
     dn = post["n"] - pre["n"]
     print(f"  Trial {t}: q_pre={pre['q']:.3e}(n={pre['n']}), "
           f"q_post={post['q']:.3e}(n={post['n']}), "
-          f"Δq={dq:+.3e} C, Δn={dn:+d}")
+          f"dq={dq:+.3e} C, dn={dn:+d}")
 
 # ── Uncertainty budget (average fractional) ──────────────────────────────────
 
@@ -419,7 +419,7 @@ for row_idx, t in enumerate((1, 2, 3)):
 plt.tight_layout(rect=[0, 0, 1, 0.96])
 plt.savefig(OUT_DIR / "per_cycle_charge_timeseries.png", dpi=300, bbox_inches="tight")
 plt.close()
-print("\n✓ per_cycle_charge_timeseries.png")
+print("\n[ok] per_cycle_charge_timeseries.png")
 
 # ── Figure 1: Charge Quantization (updated with charge states) ───────────────
 
@@ -475,7 +475,7 @@ ax.grid(True, alpha=0.2, axis="y")
 plt.tight_layout()
 plt.savefig(OUT_DIR / "charge_quantization.png", dpi=300, bbox_inches="tight")
 plt.close()
-print("✓ charge_quantization.png")
+print("[ok] charge_quantization.png")
 
 # ── Figure 2: Ionization Effect ──────────────────────────────────────────────
 
@@ -520,38 +520,7 @@ ax.grid(True, alpha=0.3, axis="y")
 plt.tight_layout()
 plt.savefig(OUT_DIR / "ionization_effect.png", dpi=300, bbox_inches="tight")
 plt.close()
-print("✓ ionization_effect.png")
-
-# ── Figure 3: Error Budget ───────────────────────────────────────────────────
-
-fig, ax = plt.subplots(figsize=(7, 5.5))
-
-# Average variance contributions across all drops (in quadrature, so use variance fractions)
-var_stat = np.mean([(d["dq_stat"]**2) / (d["dq"]**2) for d in drops]) * 100
-var_V    = np.mean([(d["dqV"]**2) / (d["dq"]**2) for d in drops]) * 100
-var_T    = np.mean([(d["dqT"]**2) / (d["dq"]**2) for d in drops]) * 100
-
-labels = [f"Velocity scatter\n(statistical)\n{var_stat:.1f}%",
-          f"Applied voltage\n(systematic)\n{var_V:.1f}%",
-          f"Temperature\n(systematic)\n{var_T:.1f}%"]
-sizes  = [var_stat, var_V, var_T]
-colors_pie = ["#FF6B6B", "#4ECDC4", "#95E1D3"]
-explode = (0.05, 0, 0)
-
-wedges, texts, autotexts = ax.pie(
-    sizes, labels=labels, autopct="%1.1f%%", colors=colors_pie,
-    explode=explode, startangle=90, textprops={"fontsize": 10})
-for at in autotexts:
-    at.set_color("white")
-    at.set_fontweight("bold")
-    at.set_fontsize(11)
-
-ax.set_title("Uncertainty Budget: Variance Contributions\n(velocity-limited measurement)",
-             fontsize=12, fontweight="bold", pad=20)
-plt.tight_layout()
-plt.savefig(OUT_DIR / "error_budget_pie.png", dpi=300, bbox_inches="tight")
-plt.close()
-print("✓ error_budget_pie.png")
+print("[ok] ionization_effect.png")
 
 # ── Figure 4: Result Comparison ──────────────────────────────────────────────
 
@@ -591,7 +560,7 @@ ax.grid(True, alpha=0.3, axis="y")
 plt.tight_layout()
 plt.savefig(OUT_DIR / "result_comparison.png", dpi=300, bbox_inches="tight")
 plt.close()
-print("✓ result_comparison.png")
+print("[ok] result_comparison.png")
 
 # ── Figure 5: Per-charge-state e estimate ────────────────────────────────────
 
@@ -640,6 +609,6 @@ ax.grid(True, alpha=0.3, axis="y")
 plt.tight_layout()
 plt.savefig(OUT_DIR / "per_drop_e_estimate.png", dpi=300, bbox_inches="tight")
 plt.close()
-print("✓ per_drop_e_estimate.png")
+print("[ok] per_drop_e_estimate.png")
 
 print(f"\nAll figures generated successfully.")
