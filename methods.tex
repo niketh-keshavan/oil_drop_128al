@@ -1,0 +1,137 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{hyperref}
+
+\title{Methods --- Millikan Oil Drop Experiment}
+\author{}
+\date{}
+
+\begin{document}
+
+\section*{Methods}
+
+\subsection*{Experimental Setup}
+
+The Millikan oil drop apparatus (PASCO AP-8210A) was used to measure the electric charge on individual oil droplets suspended between two parallel plates separated by $d = \SI{7.59}{mm}$. The droplets were observed through a telescope with a reticle scale, where each major division corresponded to a distance of \SI{0.500}{mm}. Three video recordings (TRIAL 1--3) of droplet oscillations were captured at approximately \SI{16.68}{fps} and analyzed to extract charge values.
+
+\subsection*{Temperature and Pressure Measurement}
+
+Temperature was measured using a $\SI{10}{k\Omega}$ NTC (negative temperature coefficient) thermistor calibrated against the PASCO apparatus table. The thermistor resistance was recorded as $R = \SI{11200}{-11400}{\Omega}$ across all trials, corresponding to a temperature range of approximately $T = \SI{22.2}{-22.5}{\celsius}$ (nominal $T_{\text{nom}} = \SI{22.35}{\celsius}$). The conversion from resistance to temperature was performed using linear interpolation of the calibration table, with a B-parameter fallback model for out-of-range values:
+\begin{equation}
+\frac{1}{T} = \frac{1}{T_0} + \frac{1}{B}\ln\left(\frac{R}{R_0}\right)
+\end{equation}
+where $T_0 = \SI{298.15}{K}$ (25\textdegree C), $R_0 = \SI{10000}{\Omega}$, and $B = \SI{3950}{K}$.
+
+Atmospheric pressure was measured as $P = \SI{75.9}{cmHg} = \SI{101191}{Pa}$ (approximately 1 standard atmosphere). Air density was calculated using the ideal gas law:
+\begin{equation}
+\rho_{\text{air}} = \frac{PM}{RT}
+\end{equation}
+where $M = \SI{0.02897}{kg/mol}$ is the molar mass of air and $R = \SI{8.314}{J/(mol \cdot K)}$ is the gas constant. Dynamic viscosity of air was obtained by interpolation of standard tables (PASCO manual Appendix A) at the measured temperature.
+
+\subsection*{Video Analysis and Oscillation Extraction}
+
+High-speed videos were manually analyzed using a custom interactive OpenCV-based frame player. For each observed oil droplet, we recorded the frame numbers and timestamps corresponding to the top and bottom turning points of the droplet's vertical oscillation.
+
+The oscillations occur in two phases:
+\begin{itemize}
+\item \textbf{Falling phase}: droplet moves downward under gravity and electric force, velocity $v_{\text{fall}}$
+\item \textbf{Rising phase}: droplet moves upward (often in electric field), velocity $v_{\text{rise}}$
+\end{itemize}
+
+For each phase, the time interval $\Delta t$ between consecutive turning points was computed from video timestamps, and the corresponding distance was calculated as the reticle separation. Thus:
+\begin{equation}
+v = \frac{d_{\text{reticle}}}{\Delta t}
+\end{equation}
+
+Multiple oscillation cycles were recorded per droplet to obtain averaged velocities and error estimates.
+
+\subsection*{Charge Calculation}
+
+The charge on each droplet was calculated using the governing equations from the UCSB Physics 128AL lab manual (PASCO AP-8210A apparatus guide), which account for drag forces and electric forces on the suspended droplet.
+
+\subsubsection*{Radius Estimation}
+
+At terminal velocity falling through air with viscous drag, the droplet radius is estimated from:
+\begin{equation}
+a_1 = \sqrt{\frac{9 \eta v_{\text{fall}}}{2(\rho_{\text{oil}} - \rho_{\text{air}}) g}} \quad \text{(Eqn.~5)}
+\end{equation}
+where $\eta$ is the dynamic viscosity of air, $\rho_{\text{oil}} = \SI{853}{kg/m^3}$ is the mineral oil density, $\rho_{\text{air}}$ is the calculated air density, and $g = \SI{9.80665}{m/s^2}$ is gravitational acceleration.
+
+\subsubsection*{Uncorrected Charge}
+
+The charge before Cunningham correction is:
+\begin{equation}
+q_0 = \frac{18\pi d}{V} \sqrt{\frac{\eta^3 v_{\text{fall}}}{2(\rho_{\text{oil}} - \rho_{\text{air}})g}} (v_{\text{rise}} + v_{\text{fall}}) \quad \text{(Eqn.~6)}
+\end{equation}
+where $d = \SI{7.59}{mm}$ is the plate separation and $V = \SI{552}{-555}{V}$ is the applied voltage (nominal $V_{\text{nom}} = \SI{553.5}{V}$).
+
+\subsubsection*{Cunningham Correction}
+
+For submicron droplets, the drag coefficient deviates from Stokes law due to gas molecule slip at the droplet surface. This is corrected using the Cunningham correction factor:
+\begin{equation}
+q = \frac{q_0}{\left[1 + \frac{b}{p a_1}\right]^{3/2}} \quad \text{(Eqn.~10)}
+\end{equation}
+where $b = \SI{8.226e-3}{Pa \cdot m}$ is the Cunningham constant and $p$ is atmospheric pressure. This correction typically increases the calculated charge by 5--10\% for $a_1 \sim \SI{1}{\mu m}$.
+
+\subsection*{Uncertainty Propagation}
+
+Uncertainties in the measured charge arise from three sources:
+
+\subsubsection*{Systematic Uncertainties (Voltage and Temperature)}
+
+Voltage and temperature were recorded as ranges rather than single values. The charge was evaluated at all four corners of the parameter space $(V_{\text{lo}}, V_{\text{hi}}) \times (T_{\text{lo}}, T_{\text{hi}})$:
+\begin{align}
+\Delta q_V &= \frac{1}{2}\left[\max_{V \in (V_{\text{lo}}, V_{\text{hi}})} q(V) - \min_{V} q(V)\right] \\
+\Delta q_T &= \frac{1}{2}\left[\max_{T \in (T_{\text{lo}}, T_{\text{hi}})} q(T) - \min_T q(T)\right]
+\end{align}
+
+The combined systematic uncertainty is:
+\begin{equation}
+\Delta q_{\text{syst}} = \sqrt{(\Delta q_V)^2 + (\Delta q_T)^2}
+\end{equation}
+
+\subsubsection*{Statistical Uncertainty (Velocity Measurements)}
+
+Individual measurements of $v_{\text{fall}}$ and $v_{\text{rise}}$ from the five--seven oscillation cycles per droplet were recorded. Using first-order error propagation and the functional form of Equation~6:
+\begin{equation}
+\frac{\Delta q}{q} \approx \sqrt{\left(\frac{3}{2}\frac{\sigma_{v_{\text{fall}}}}{v_{\text{fall}}}\right)^2 + \left(\frac{\sigma_{v_{\text{rise}} + v_{\text{fall}}}}{v_{\text{rise}} + v_{\text{fall}}}\right)^2}
+\end{equation}
+
+where $\sigma_v$ denotes the standard error of the mean velocity from the sample of oscillations.
+
+\subsubsection*{Total Uncertainty}
+
+Statistical and systematic contributions are combined in quadrature:
+\begin{equation}
+\Delta q_{\text{total}} = \sqrt{(\Delta q_{\text{stat}})^2 + (\Delta q_{\text{syst}})^2}
+\end{equation}
+
+\subsection*{Elementary Charge Estimation}
+
+For each droplet, the measured charge $q$ is a multiple of the elementary charge: $q = n e$, where $n$ is the number of elementary charges. A best-fit integer $n$ was assigned by rounding $|q|/e_{\text{ref}}$ to the nearest integer, where $e_{\text{ref}} = \SI{1.602176634e-19}{C}$ is the CODATA 2018 value.
+
+Droplets within the same charge quantization class ($n$ = constant) were grouped, and the elementary charge was estimated as:
+\begin{equation}
+e = \frac{\langle q \rangle}{n}
+\end{equation}
+
+A weighted average over all droplets, with weights $w_i = 1/\sigma_i^2$ where $\sigma_i$ is the total uncertainty on droplet $i$, was used to obtain a final estimate:
+\begin{equation}
+e_{\text{est}} = \frac{\sum_i w_i e_i}{\sum_i w_i}, \quad \sigma_e = \frac{1}{\sqrt{\sum_i w_i}}
+\end{equation}
+
+\subsection*{Data Output}
+
+For each trial, the following outputs were generated:
+\begin{itemize}
+\item Per-droplet charge summary CSV file
+\item Velocity--time plot for each droplet (showing individual fall/rise velocities with mean lines)
+\item Combined analysis CSV (all droplets from the trial)
+\item Summary histogram and $q/e$ charge quantization plot
+\end{itemize}
+
+\end{document}
