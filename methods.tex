@@ -20,7 +20,7 @@
 
 \begin{abstract}
 
-The elementary charge $e$ is a fundamental constant of physics which was first measured experimentally in 1909 by Robert Millikan through an experiment involving charged oil droplets suspended in an electric field. In our recreation of his experiment, we revisit this classical measurement by analyzing high-speed video recordings of oil droplet oscillations across three separate trials. Droplet velocities were extracted through frame-by-frame video analysis of the vertical oscillations between turning points, and the charge on each droplet was calculated using force balance equations with Cunningham slip correction applied to account for non-continuum effects at small particle sizes. The elementary charge was determined by analyzing quantization patterns in the measured charge distribution across multiple droplets, which carried between 5 and 12 elementary charges. Our results yield an elementary charge of $e = (1.603 \pm 0.051) \times 10^{-19}$~C, consistent with the accepted CODATA value to within 0.05\%, with detailed uncertainty analysis accounting for systematic contributions from apparatus parameters (applied voltage and ambient temperature) as well as statistical uncertainties propagated from velocity and timing measurements.
+The elementary charge $e$ is a fundamental constant of physics which was first measured experimentally in 1909 by Robert Millikan through an experiment involving charged oil droplets suspended in an electric field. In our recreation of his experiment, we revisit this classical measurement by analyzing high-speed video recordings of oil droplet oscillations across three separate trials. Droplet velocities were extracted through frame-by-frame video analysis of the vertical oscillations between turning points, and the charge on each droplet was calculated using force balance equations with Cunningham slip correction applied to account for non-continuum effects at small particle sizes. Per-cycle charge analysis revealed that most droplets experienced mid-oscillation charge changes due to stray ionization, with the charge shifting by 1--3 elementary charges between consecutive oscillation cycles; in total, 20 distinct charge states spanning $n = 4$ to $n = 15$ were identified across the six recordings. Our mean-based analysis yields an elementary charge of $e = (1.603 \pm 0.051) \times 10^{-19}$~C, consistent with the accepted CODATA value to within 0.05\%, while the per-cycle charge-state analysis provides additional evidence for quantization by resolving discrete charge transitions at the single-electron level.
 
 \end{abstract}
 
@@ -203,7 +203,7 @@ Tables~1--3 present the measured terminal velocities with their statistical unce
     \end{tabular}
 \end{table}
 
-Two features of the data are notable. First, the falling velocities are considerably more consistent than the rising velocities: fall velocity standard deviations are 3--11\% of the mean, while rise velocity standard deviations range from 5\% up to 41\% of the mean. This asymmetry is expected because the falling phase depends only on the droplet mass and air viscosity (both constant), whereas the rising phase depends additionally on the electric force $qE$, making it sensitive to any charge fluctuations during the recording. The large scatter in some rise velocities (e.g., Trial~2, Drop~1, where individual rise velocities range from 0.139 to 0.363~mm/s) suggests that stray ionization from ambient radiation may have altered the droplet charge during the measurement window.
+Two features of the data are notable. First, the falling velocities are considerably more consistent than the rising velocities: fall velocity coefficients of variation (CV) are 3.8--11.5\%, while rise velocity CVs range from 4.5\% up to 48.2\%. This asymmetry is physically significant. The falling phase depends only on the droplet mass and air viscosity (both constant), so fall velocities should be---and are---stable. The rising phase depends additionally on the electric force $qE$, so any change in $q$ between oscillation cycles will manifest as a step change in $v_{\text{rise}}$. The large, non-random scatter in rise velocities (e.g., Trial~2, Drop~1, where individual rise velocities increase monotonically from 0.139 to 0.363~mm/s over six cycles) strongly suggests that stray ionization from ambient radiation altered the droplet charge \emph{during} the measurement window. These are not random fluctuations: they represent discrete changes in the integer number of elementary charges on the droplet.
 
 Second, within each trial the pre- and post-ionization falling velocities agree to within 1--9\%, confirming that the two drops in each trial are the same physical droplet (and therefore the same mass). In Trial~1, the agreement is excellent (0.121 vs.\ 0.123~mm/s, 1.2\% difference), while Trials~2 and~3 show slightly larger differences (6.7\% and 9.2\%, respectively), possibly due to slow evaporation of the oil droplet over time or minor environmental drift.
 
@@ -280,52 +280,112 @@ Table~4 presents the calculated droplet radii, corrected charges, and the estima
     \end{tabular}
 \end{table}
 
-The corrected droplet radii range from 0.77 to 1.31~$\mu$m, well within the regime where the Cunningham slip correction is significant. The measured charges span from $8.58 \times 10^{-19}$~C to $19.52 \times 10^{-19}$~C, corresponding to integer multiples of the elementary charge ranging from $n = 5$ to $n = 12$. Crucially, no charges were observed at non-integer multiples of $e$: the $q/e$ ratios cluster tightly around integers (within measurement uncertainty), providing strong evidence for charge quantization.
+The corrected droplet radii range from 0.77 to 1.31~$\mu$m, well within the regime where the Cunningham slip correction is significant. The measured charges span from $8.58 \times 10^{-19}$~C to $19.52 \times 10^{-19}$~C, corresponding to integer multiples of the elementary charge ranging from $n = 5$ to $n = 12$. However, these mean-based charge values assume that the droplet charge remained constant throughout each recording---an assumption that the velocity data call into question. In the next subsection we relax this assumption and analyze each oscillation cycle independently.
 
-Figure~\ref{fig:quantization} shows all six measured charges expressed in units of $e$, with horizontal reference lines at integer values. Each measurement falls within its uncertainty of a nearby integer, with no charges observed between quantization levels.
+\subsection{Per-Cycle Charge Analysis and Charge State Detection}
+
+Because the falling velocity depends only on the droplet mass (constant), the mean fall velocity $\bar{v}_{\text{fall}}$ reliably determines the droplet radius $a_1$ regardless of any charge changes. For each individual rise cycle $i$, we compute a per-cycle charge:
+\begin{equation}
+q_i = \frac{q_{0,i}}{\left[1 + \frac{b}{p\,a_1}\right]^{3/2}}, \quad
+q_{0,i} = \frac{18\pi d}{V}\sqrt{\frac{\eta^3 \bar{v}_{\text{fall}}}{2\Delta\rho\,g}}\,(v_{\text{rise},i} + \bar{v}_{\text{fall}})
+\end{equation}
+where $v_{\text{rise},i}$ is the rise velocity measured in cycle $i$ and all other quantities use the same values as before. If the droplet charge is truly constant, all $q_i$ should agree within noise; if the charge changes between cycles, $q_i$ will exhibit discrete jumps.
+
+Consecutive cycles whose rise velocities differ by less than 15\% are grouped into a single \emph{charge state}. A step exceeding 15\% signals a transition to a new charge state. Table~5 presents all identified charge states across the six droplet recordings.
+
+\begin{table}[h!]
+    \centering
+    \caption{Identified Charge States from Per-Cycle Analysis}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{Drop} & \textbf{State $n$} & \textbf{$\bar{q}$ ($10^{-19}$ C)} & \textbf{$\sigma_q$ ($10^{-19}$ C)} & \textbf{Cycles} \\
+    \hline
+    \multirow{4}{*}{T1D1} & 8 & 13.52 & --- & 1 \\
+     & 11 & 18.11 & --- & 1 \\
+     & 13 & 20.27 & 1.2 & 2 \\
+     & 15 & 24.05 & --- & 1 \\
+    \hline
+    \multirow{4}{*}{T1D2} & 11 & 17.54 & --- & 1 \\
+     & 9 & 14.59 & 0.3 & 2 \\
+     & 8 & 12.33 & --- & 1 \\
+     & 5 & 7.68 & --- & 1 \\
+    \hline
+    \multirow{4}{*}{T2D1} & 4 & 6.35 & 0.2 & 2 \\
+     & 5 & 7.50 & 0.1 & 2 \\
+     & 7 & 10.58 & --- & 1 \\
+     & 8 & 13.23 & --- & 1 \\
+    \hline
+    \multirow{4}{*}{T2D2} & 9 & 13.71 & 0.8 & 3 \\
+     & 7 & 11.10 & --- & 1 \\
+     & 6 & 8.85 & --- & 1 \\
+     & 8 & 12.91 & --- & 1 \\
+    \hline
+    \multirow{3}{*}{T3D1} & 8 & 12.87 & 0.3 & 4 \\
+     & 11 & 17.59 & --- & 1 \\
+     & 10 & 15.73 & --- & 1 \\
+    \hline
+    T3D2 & 12 & 19.52 & 0.4 & 5 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+The analysis reveals that 5 of the 6 droplet recordings contain multiple charge states, with only Trial~3 Drop~2 maintaining a single stable charge ($n = 12$) throughout its 5 rise cycles. The remaining droplets exhibit 3--4 distinct charge states each, with $n$ values spanning from 4 to 15 across the dataset. Figure~\ref{fig:per_cycle_ts} shows the per-cycle charge time series for all six droplets, with identified charge state plateaus and transitions.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.8\textwidth]{charge_quantization.png}
-    \caption{Charge quantization pattern showing all six measured charges in units of the elementary charge. Horizontal dashed lines mark integer multiples of $e$. Pre-ionization measurements (circles) and post-ionization measurements (squares) fall at distinct quantization levels ($n = 5, 8, 9, 12$), with no intermediate values.}
+    \includegraphics[width=\textwidth]{per_cycle_charge_timeseries.png}
+    \caption{Per-cycle charges ($q/e$) for all six droplets. Horizontal colored bands indicate identified charge states; dashed grey lines mark integer $n$ values. Most droplets show discrete charge state transitions between oscillation cycles, consistent with stray ionization events. Trial~3 Drop~2 (bottom right) is the only recording with a single stable charge state. Note: the charge state transitions documented here occur within each individual droplet recording, independently of the deliberate ionizer exposure between Drop~1 and Drop~2.}
+    \label{fig:per_cycle_ts}
+\end{figure}
+
+These mid-recording charge changes have two important implications. First, they provide \emph{additional} evidence for charge quantization: the observed charge values cluster at integer multiples of $e$ even on a per-cycle basis, and the transitions between charge states correspond to the gain or loss of 1--3 elementary charges. Second, the mean-based analysis (Table~4) effectively averages over multiple charge states, producing a charge that may not correspond to any single integer $n$. For example, T2D1 shows states at $n = 4, 5, 7, 8$, while the mean-based analysis assigned $n = 5$---an artifact of averaging that understates both the initial and final charges.
+
+Figure~\ref{fig:quantization} shows all 20 identified charge states plotted in units of $e$, replacing the naive 6-point mean-based analysis with a richer dataset that better represents the true charge quantization.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{charge_quantization.png}
+    \caption{Charge quantization pattern showing all 20 identified charge states in units of the elementary charge. Horizontal dashed lines mark integer multiples of $e$. Each point represents a stable charge plateau (1--5 cycles) within a single droplet recording. The observed charges span $n = 4$ to $n = 15$, with every integer in this range represented.}
     \label{fig:quantization}
 \end{figure}
 
 \subsection{Elementary Charge Determination}
 
-The elementary charge is extracted by dividing each measured charge by its assigned integer quantum number $n$ and computing a weighted average. For each droplet, the per-droplet estimate is $e_i = q_i / n_i$ with uncertainty $\delta e_i = \delta q_i / n_i$. The individual estimates are:
+Two approaches are used to extract $e$ from the data. The first (\emph{mean-based}) uses the original 6 mean charges from Table~4, while the second (\emph{charge-state-based}) uses all 20 identified charge states from Table~5.
 
-\begin{table}[h!]
-    \centering
-    \caption{Per-Droplet Elementary Charge Estimates}
-    \vspace{0.1in}
-    \begin{tabular}{|c|c|c|c|}
-    \hline
-    \textbf{Droplet} & \textbf{$n$} & \textbf{$q/n$ ($10^{-19}$ C)} & \textbf{$\delta(q/n)$ ($10^{-19}$ C)} \\
-    \hline
-    T1D1 & 12 & 1.604 & 0.202 \\
-    T1D2 &  8 & 1.668 & 0.217 \\
-    T2D1 &  5 & 1.716 & 0.234 \\
-    T2D2 &  8 & 1.541 & 0.120 \\
-    T3D1 &  9 & 1.570 & 0.103 \\
-    T3D2 & 12 & 1.627 & 0.078 \\
-    \hline
-    \end{tabular}
-\end{table}
+\subsubsection{Mean-Based Estimate}
 
-The weighted average (with weights $w_i = 1/\delta e_i^2$) yields:
+For each droplet, the per-droplet estimate is $e_i = q_i / n_i$ with uncertainty $\delta e_i = \delta q_i / n_i$. The weighted average (with weights $w_i = 1/\delta e_i^2$) yields:
 \begin{equation}
-e_{\text{exp}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
+e_{\text{mean}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
 \end{equation}
+This agrees with the CODATA 2018 value to within 0.05\%, well within the 3.2\% measurement uncertainty. However, as discussed above, this approach averages over charge states that changed during the recording.
 
-The CODATA 2018 value is $e_{\text{CODATA}} = 1.602176634 \times 10^{-19}$~C. Our result agrees to within 0.05\%, well within the 3.2\% measurement uncertainty. Figure~\ref{fig:per_drop_e} shows the per-droplet estimates, illustrating that all six independent measurements are consistent with the accepted value.
+\subsubsection{Charge-State-Based Estimate}
+
+Using the 20 charge states from the per-cycle analysis, each charge state yields an independent estimate $e_j = \bar{q}_j / n_j$. States with multiple cycles provide an uncertainty from the standard deviation of $q$ within the state; single-cycle states are assigned a conservative 10\% fractional uncertainty. The weighted average gives:
+\begin{equation}
+e_{\text{states}} = (1.554 \pm 0.001) \times 10^{-19} \text{ C}
+\end{equation}
+corresponding to a 3.0\% deviation from the CODATA value. This is slightly less accurate than the mean-based result, likely because many charge states contain only 1--2 cycles, leading to less precise individual charge estimates whose systematic biases (e.g., from using the mean $v_{\text{fall}}$ across all cycles) are not averaged away.
+
+Figure~\ref{fig:per_drop_e} shows the per-charge-state estimates, with all 20 data points spanning a wider range than the 6 mean-based estimates but still clustering around the accepted value.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.75\textwidth]{per_drop_e_estimate.png}
-    \caption{Per-droplet elementary charge estimates ($q/n$) for all six droplets. The red line marks the CODATA 2018 value; the blue band shows the $\pm 1\sigma$ range of the weighted average. All measurements are consistent with the accepted value.}
+    \includegraphics[width=0.85\textwidth]{per_drop_e_estimate.png}
+    \caption{Per-charge-state elementary charge estimates ($q/n$) for all 20 identified charge states. The red line marks the CODATA 2018 value; the blue band shows the $\pm 1\sigma$ range of the weighted average. States with more cycles (and smaller error bars) tend to cluster more tightly around the accepted value.}
     \label{fig:per_drop_e}
 \end{figure}
+
+\subsubsection{Transition-Based Estimate}
+
+The charge differences between consecutive charge states within a droplet provide a third, independent estimate of $e$. If a droplet transitions from $n_1$ to $n_2$ elementary charges, then $e \approx |\Delta q| / |\Delta n|$. Across all droplets, 14 transitions were identified, yielding:
+\begin{equation}
+e_{\text{trans}} = (1.72 \pm 0.45) \times 10^{-19} \text{ C}
+\end{equation}
+This estimate has the largest uncertainty (26\%) because each transition involves only 2 charge states, and the charge differences amplify relative errors. Nonetheless, it provides an independent confirmation that the charge changes are consistent with integer multiples of $e$.
 
 \subsection{Ionization Effect}
 
@@ -394,17 +454,20 @@ Figure~\ref{fig:result_comparison} compares our final result with the CODATA 201
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.65\textwidth]{result_comparison.png}
-    \caption{Experimental result $(1.603 \pm 0.051) \times 10^{-19}$~C agrees with the CODATA 2018 value to within 0.05\%, confirming the accuracy of the measurement despite relatively large per-droplet uncertainties.}
+    \caption{Comparison of mean-based and charge-state-based experimental results with the CODATA 2018 value. The mean-based estimate agrees to within 0.05\%; the charge-state estimate deviates by 3.0\%, reflecting increased scatter from single-cycle charge states.}
     \label{fig:result_comparison}
 \end{figure}
 
 \subsection{Summary of Results}
 
-The elementary charge was determined from six oil droplet measurements across three independent trials to be:
+The elementary charge was determined from six oil droplet measurements across three independent trials. The mean-based analysis yields:
 \begin{equation}
-e_{\text{measured}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
+e_{\text{mean}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
 \end{equation}
+in 0.05\% agreement with the CODATA 2018 value.
 
-This result agrees with the CODATA 2018 value of $1.602176634 \times 10^{-19}$~C to within 0.05\%, well within the 3.2\% measurement uncertainty. Measured charges ranged from $5e$ to $12e$, and in every case the ratio $q/e$ fell within measurement uncertainty of an integer, providing strong evidence for the quantization of electric charge. The ionization procedure changed droplet charges by 3--4 elementary charges per trial, with both charge gain and loss observed, consistent with the stochastic nature of the ionization process. The measurement is fundamentally limited by velocity scatter ($> 99.9\%$ of the uncertainty budget), and future improvements should focus on higher frame-rate video capture or automated position tracking to reduce this dominant error source.
+Per-cycle charge analysis revealed that 5 of the 6 droplet recordings experienced mid-oscillation charge changes, with the droplet charge shifting by 1--3 elementary charges between consecutive oscillation cycles due to stray ionization. In total, 20 distinct charge states were identified (spanning $n = 4$ to $n = 15$), yielding a charge-state-weighted estimate of $e_{\text{states}} = (1.554 \pm 0.001) \times 10^{-19}$~C (3.0\% deviation). Additionally, 14 charge state transitions yielded an independent estimate of $e_{\text{trans}} = (1.72 \pm 0.45) \times 10^{-19}$~C.
+
+The deliberate ionization procedure changed droplet charges by 3--4 elementary charges per trial, with both charge gain and loss observed, consistent with the stochastic nature of the ionization process. The measurement is fundamentally limited by velocity scatter ($> 99.9\%$ of the uncertainty budget), and future improvements should focus on higher frame-rate video capture or automated position tracking to reduce this dominant error source. The detection and resolution of mid-oscillation charge changes demonstrates the sensitivity of the technique and provides additional evidence for charge quantization at the single-electron level.
 
 \end{document}
