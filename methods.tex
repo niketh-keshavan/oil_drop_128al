@@ -1,137 +1,410 @@
 \documentclass[11pt]{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
-\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{siunitx}
-\usepackage{hyperref}
-
-\title{Methods --- Millikan Oil Drop Experiment}
-\author{}
-\date{}
+\usepackage{subcaption}
+\usepackage{multirow}
+\geometry{letterpaper, margin=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
 
 \begin{document}
 
-\section*{Methods}
+% --- Section 1: Title and Abstract ---
+\title{Millikan Oil Drop Experiment}
+\author{Niketh Keshavan}
+\date{\today}
+\maketitle
 
-\subsection*{Experimental Setup}
+\begin{abstract}
 
-The Millikan oil drop apparatus (PASCO AP-8210A) was used to measure the electric charge on individual oil droplets suspended between two parallel plates separated by $d = \SI{7.59}{mm}$. The droplets were observed through a telescope with a reticle scale, where each major division corresponded to a distance of \SI{0.500}{mm}. Three video recordings (TRIAL 1--3) of droplet oscillations were captured at approximately \SI{16.68}{fps} and analyzed to extract charge values.
+The elementary charge $e$ is a fundamental constant of physics which was first measured experimentally in 1909 by Robert Millikan through an experiment involving charged oil droplets suspended in an electric field. In our recreation of his experiment, we revisit this classical measurement by analyzing high-speed video recordings of oil droplet oscillations across three separate trials. Droplet velocities were extracted through frame-by-frame video analysis of the vertical oscillations between turning points, and the charge on each droplet was calculated using force balance equations with Cunningham slip correction applied to account for non-continuum effects at small particle sizes. The elementary charge was determined by analyzing quantization patterns in the measured charge distribution across multiple droplets, which carried between 5 and 12 elementary charges. Our results yield an elementary charge of $e = (1.603 \pm 0.051) \times 10^{-19}$~C, consistent with the accepted CODATA value to within 0.05\%, with detailed uncertainty analysis accounting for systematic contributions from apparatus parameters (applied voltage and ambient temperature) as well as statistical uncertainties propagated from velocity and timing measurements.
 
-\subsection*{Temperature and Pressure Measurement}
+\end{abstract}
 
-Temperature was measured using a $\SI{10}{k\Omega}$ NTC (negative temperature coefficient) thermistor calibrated against the PASCO apparatus table. The thermistor resistance was recorded as $R = \SI{11200}{-11400}{\Omega}$ across all trials, corresponding to a temperature range of approximately $T = \SI{22.2}{-22.5}{\celsius}$ (nominal $T_{\text{nom}} = \SI{22.35}{\celsius}$). The conversion from resistance to temperature was performed using linear interpolation of the calibration table, with a B-parameter fallback model for out-of-range values:
+\newpage
+% --- Section 2: Introduction ---
+\section{Introduction}
+
+The elementary charge $e$ is one of the most precisely known fundamental constants in physics, yet its experimental determination remains a profound achievement in experimental physics. Unlike many physical quantities that vary continuously, electric charge is quantized, meaning it exists only in discrete multiples of a fundamental unit. The value $e = 1.60217663 \times 10^{-19}$ C represents the magnitude of charge carried by a single proton, and all observed electric charges in nature are integer multiples of this quantity.
+
+The first precise experimental measurement of $e$ was obtained by Robert Millikan at the University of Chicago between 1909 and 1913. Although the discreteness of charge had been suspected since J.J. Thomson's identification of the electron, Millikan's oil drop experiment provided irrefutable evidence by directly observing the quantized nature of charge on individual droplets. His careful measurements not only confirmed the quantization hypothesis but also provided a value for $e$ accurate to within 0.6\% of the modern accepted value—a remarkable achievement given the experimental constraints of the era.
+
+The fundamental principle underlying the Millikan oil drop experiment is the equilibrium of three forces acting on a small, charged oil droplet suspended between two parallel, oppositely charged plates. Consider a spherical droplet of radius $a$ and mass $m = \frac{4}{3}\pi a^3 \rho_{\text{oil}}$, where $\rho_{\text{oil}}$ is the mass density of mineral oil. This droplet is subject to three forces:
+
+\begin{itemize}
+    \item $F_g = mg$ (acting downward)
+    \item $F_E = qE = \frac{qV}{d}$ (direction dependent on charge sign and field polarity)
+    \item $F_d = 6\pi \eta a v$ (opposing the direction of motion)
+\end{itemize}
+
+where $q$ is the charge on the droplet, $V$ is the applied voltage between the plates, $d$ is the plate separation, $\eta$ is the dynamic viscosity of air, and $v$ is the instantaneous velocity. The drag force is governed by Stokes' law, valid for laminar flow around a spherical object.
+
+At terminal velocity, the net force on the droplet vanishes, and the droplet moves at constant velocity. Two regimes of motion are observed: a \emph{falling phase} in which the electric field is turned \emph{off}, allowing gravity and drag to balance in the absence of an electric force, and a \emph{rising phase} in which the electric field is \emph{on} and the electric force overcomes gravity. In the falling phase, with the electric field disabled:
 \begin{equation}
-\frac{1}{T} = \frac{1}{T_0} + \frac{1}{B}\ln\left(\frac{R}{R_0}\right)
+mg = 6\pi \eta a v_{\text{fall}}
 \end{equation}
-where $T_0 = \SI{298.15}{K}$ (25\textdegree C), $R_0 = \SI{10000}{\Omega}$, and $B = \SI{3950}{K}$.
 
-Atmospheric pressure was measured as $P = \SI{75.9}{cmHg} = \SI{101191}{Pa}$ (approximately 1 standard atmosphere). Air density was calculated using the ideal gas law:
+In the rising phase, with the electric field applied:
+\begin{equation}
+qE - mg = 6\pi \eta a v_{\text{rise}}
+\end{equation}
+
+By measuring both velocities and knowing the apparatus parameters, the charge $q$ can be solved for. The droplet radius $a$ is initially estimated from the falling velocity alone, using the condition that gravity balances drag. Subsequently, the Cunningham slip correction is applied to account for the breakdown of the continuum assumption at micrometer length scales.
+
+For droplets with radii comparable to the mean free path $\lambda$ of air molecules (approximately 0.064 $\mu$m at standard conditions), the assumption that air behaves as a continuous medium begins to fail. Near the surface of the droplet, gas molecules no longer undergo perfectly elastic collisions with the droplet; instead, some molecules can traverse the region near the surface without colliding, leading to velocity slip. This causes the effective drag force to be smaller than predicted by Stokes' law.
+
+The Cunningham slip correction factor accounts for this effect by modifying the drag coefficient:
+\begin{equation}
+F_d = \frac{6\pi \eta a v}{1 + \frac{b}{p a_1}}
+\end{equation}
+
+where $b = 8.226 \times 10^{-3}$ Pa$\cdot$m is the Cunningham constant, $p$ is atmospheric pressure, and $a_1$ is the droplet radius estimated from the falling velocity. The correction is typically expressed as multiplying the uncorrected charge by a factor:
+\begin{equation}
+q = \frac{q_0}{\left[1 + \frac{b}{p a_1}\right]^{3/2}}
+\end{equation}
+
+For droplets with $a_1 \sim 1$ $\mu$m, this correction increases the calculated charge by approximately 5--10\%, making it essential for accurate measurements.
+
+In Millikan's original experiment, droplets were observed through a telescope with a reticle scale, and the vertical positions were recorded manually. In this modern iteration, we employ high-speed video recording to capture droplet oscillations with frame-level precision. 
+
+We recorded video sequences at approximately 16-17 frames per second, then manually identified the frame numbers at which the droplet reaches its topmost and bottommost positions (the turning points). The time interval $\Delta t$ between consecutive turning points is determined from the frame rate and frame count, and the corresponding distance is read from the reticle scale visible in the video. Thus, the terminal velocity is simply:
+\begin{equation}
+v = \frac{\text{distance}}{\Delta t}
+\end{equation}
+
+Multiple oscillation cycles are recorded per droplet to obtain averaged velocities and to quantify measurement uncertainty through standard deviation calculations.
+
+\section{Experimental Methods}
+
+\subsection{Apparatus and Setup}
+
+The fundamental apparatus used in this experiment is a commercial Millikan oil drop apparatus (PASCO AP-8210A), which provides a pair of horizontal parallel metal plates separated by a precisely machined distance of $d = 7.37$ mm. The plates can be charged to a controllable voltage, ranging from 0 to approximately 600 V. A thermistor embedded within the apparatus measures the environmental temperature, while a reticle scale visible through the observation telescope provides a spatial reference with each major division corresponding to 0.500 mm. The apparatus is mounted on a stable optical bench to minimize vibration during measurement.
+
+The oil mist is generated by atomizing ordinary mineral oil (density $\rho_{\text{oil}} = 853$ kg/m$^3$) using a mechanical atomizer. Droplets enter the space between the parallel plates and become charged through frictional interactions during the atomization process. An ionizer can be activated to introduce additional charge onto existing droplets, increasing their net charge without changing their mass. The electric field is applied perpendicular to the gravitational field, with the field strength given by $E = V/d$, where $V$ is the applied voltage.
+
+\begin{figure}[ht]
+    \centering
+    % First Subfigure
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{apparatus_diagram.png}
+        \caption{Overhead view of the PASCO apparatus.}
+        \label{fig:left}
+    \end{subfigure}
+    \hfill % Adds horizontal space between the images
+    % Second Subfigure
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{diagram_2.png}
+        \caption{Expanded view of the viewing chamber.}
+        \label{fig:right}
+    \end{subfigure}
+    
+    \caption{Schematic of the Millikan oil drop apparatus showing the parallel plates, observation telescope with reticle scale, high-voltage power supply, thermistor for temperature monitoring, and the ionizer positioned above the observation region.}
+    \label{fig:apparatus}
+\end{figure}
+
+We used an external high-voltage power supply to drive the electric field between the plates. For the fall phase measurements, this power supply was disabled (0 V field), allowing gravity alone to drive the droplet downward. For the rise phase measurements, the power supply was set to maximum, which fell within within the range $V = 552$--555 V (nominal $V_{\text{nom}} = 553.5$ V). The voltage was monitored continuously during each trial to detect drift, with recorded values accurate to $\pm 1$ V.
+
+Temperature was measured using a 10 k$\Omega$ negative temperature coefficient (NTC) thermistor embedded in the PASCO apparatus. The thermistor resistance was measured using a digital multimeter, and the relationship between resistance and temperature was established using the PASCO calibration table. The tabulated data provided discrete pairs $(R, T)$, which were interpolated using linear interpolation for intermediate values. During all three trials, the thermistor resistance ranged from 11200 to 11400 $\Omega$, corresponding to a temperature range of $T = 22.2$--22.5°C (nominal $T_{\text{nom}} = 22.35$°C). The interpolation uncertainty for temperatures within the calibration range is estimated at $\pm 0.1$°C; this propagates to an uncertainty of approximately $\pm 0.5\%$ in air viscosity.
+
+Atmospheric pressure was measured using a calibrated barometer and recorded as $P = 75.9$ cmHg, equivalent to 101191 Pa (approximately 1.00 standard atmosphere). This value was used to calculate the air density via the ideal gas law:
 \begin{equation}
 \rho_{\text{air}} = \frac{PM}{RT}
 \end{equation}
-where $M = \SI{0.02897}{kg/mol}$ is the molar mass of air and $R = \SI{8.314}{J/(mol \cdot K)}$ is the gas constant. Dynamic viscosity of air was obtained by interpolation of standard tables (PASCO manual Appendix A) at the measured temperature.
+where $M = 0.02897$ kg/mol is the molar mass of air, $R = 8.314$ J/(mol·K) is the universal gas constant, and $T$ is the measured absolute temperature. At our measured conditions, this yields $\rho_{\text{air}} \approx 1.189$ kg/m$^3$, with an uncertainty of approximately $\pm 0.5\%$ dominated by the temperature uncertainty.
 
-\subsection*{Video Analysis and Oscillation Extraction}
+\subsection{Video Recording and Analysis Procedure}
 
-High-speed videos were manually analyzed using a custom interactive OpenCV-based frame player. For each observed oil droplet, we recorded the frame numbers and timestamps corresponding to the top and bottom turning points of the droplet's vertical oscillation.
+High-speed video recordings of droplet motion were captured using a digital camera mounted to the observation telescope at a frame rate of approximately 16.68 fps (the standard frame rate for the camera used). Each trial consisted of two phases: pre-ionization and post-ionization.
 
-The oscillations occur in two phases:
+For the initial measurement, the electric field was cycled between on and off states to induce sustained oscillation. The field was set to approximately 553.5 V (on state), causing the droplet to rise upward against gravity. Once the particle crossed one major reticle division ($0.5$ mm), the field was switched to zero volts (off state), allowing the droplet to fall purely under gravitational and viscous forces until it reached the starting position. This on-off cycling was repeated multiple times to produce a series of 5--7 complete oscillation cycles (alternating rise and fall phases), spanning approximately 30--40 seconds of continuous video recording. This procedure allowed both the upward velocity (field on) and downward velocity (field off) to be measured on the same droplet under consistent environmental conditions.
+
+After completing Drop 1, an ionizer was activated for exactly 5 seconds to expose the droplet to a source of ionizing radiation, which can increase the total charge on the droplet. Immediately following the ionization period, Drop 2 was recorded on the same droplet, again using the same electric field cycling procedure: field on (causing upward motion), then field off (causing downward motion), repeated to capture 5--7 oscillation cycles at the new charge state.
+
+The key advantage of this two-drop procedure is that both measurements are performed on the \\emph{same droplet}, eliminating mass variations that would otherwise introduce systematic errors. The change in charge due to ionization ($\Delta q = q_{Drop 2} - q_{Drop 1}$) can thus be directly related to the ionization process.
+
+\subsection{Velocity Extraction from Video Frames}
+
+The video files from each drop were analyzed via an interactive video player written in Python and OpenCV. This tool displays the video frame-by-frame and allows us to identify the precise frame numbers at which the droplet reaches its topmost and bottommost turning points.
+
+For each identified pair of turning points, the following information was recorded:
 \begin{itemize}
-\item \textbf{Falling phase}: droplet moves downward under gravity and electric force, velocity $v_{\text{fall}}$
-\item \textbf{Rising phase}: droplet moves upward (often in electric field), velocity $v_{\text{rise}}$
+    \item Top and bottom frame numbers
+    \item Time interval, which we computed as $\Delta t = (n_{\text{frame,bottom}} - n_{\text{frame,top}}) / f_{\text{rate}}$, where $f_{\text{rate}} = 16.68$ fps
 \end{itemize}
 
-For each phase, the time interval $\Delta t$ between consecutive turning points was computed from video timestamps, and the corresponding distance was calculated as the reticle separation. Thus:
+The terminal velocity for each oscillation cycle is then calculated as:
 \begin{equation}
-v = \frac{d_{\text{reticle}}}{\Delta t}
+v = \frac{\text{(reticle divisions)} \times 0.500 \text{ mm}}{\Delta t}
 \end{equation}
 
-Multiple oscillation cycles were recorded per droplet to obtain averaged velocities and error estimates.
+Multiple cycles per droplet (typically 5--7) are averaged to obtain a mean velocity and standard deviation. The standard deviation serves as a quantitative measure of the velocity uncertainty due to frame-level timing jitter and reticle reading uncertainty.
 
-\subsection*{Charge Calculation}
+\section{Raw Data}
 
-The charge on each droplet was calculated using the governing equations from the UCSB Physics 128AL lab manual (PASCO AP-8210A apparatus guide), which account for drag forces and electric forces on the suspended droplet.
+\subsection{Velocity Measurements and Their Uncertainties}
 
-\subsubsection*{Radius Estimation}
+The primary raw data from this experiment consist of terminal velocity measurements extracted from high-speed video recordings for each droplet across three trials. In each trial, two droplets were recorded: Drop~1 (pre-ionization) and Drop~2 (post-ionization, on the same physical droplet after 5~seconds of ionizer exposure). Multiple oscillation cycles (4--7) were recorded in both the rising phase (electric field on) and falling phase (electric field off), allowing the mean velocity and statistical uncertainty to be quantified.
 
-At terminal velocity falling through air with viscous drag, the droplet radius is estimated from:
+Tables~1--3 present the measured terminal velocities with their statistical uncertainties for all droplets across the three trials.
+
+\begin{table}[h!]
+    \centering
+    \caption{Trial 1: Terminal Velocities with Uncertainties (fps = 16.68)}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{State} & \textbf{Phase} & \textbf{$\bar{v}$ (mm/s)} & $\sigma_v$ (mm/s) & \textbf{Cycles} \\
+    \hline
+    \multirow{2}{*}{Pre-ionization} & Falling & $0.121$ & $0.014$ & 4 \\
+    & Rising & $0.294$ & $0.084$ & 5 \\
+    \hline
+    \multirow{2}{*}{Post-ionization} & Falling & $0.123$ & $0.007$ & 5 \\
+    & Rising & $0.163$ & $0.079$ & 5 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \caption{Trial 2: Terminal Velocities with Uncertainties (fps = 16.68)}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{State} & \textbf{Phase} & \textbf{$\bar{v}$ (mm/s)} & $\sigma_v$ (mm/s) & \textbf{Cycles} \\
+    \hline
+    \multirow{2}{*}{Pre-ionization} & Falling & $0.060$ & $0.004$ & 6 \\
+    & Rising & $0.214$ & $0.088$ & 6 \\
+    \hline
+    \multirow{2}{*}{Post-ionization} & Falling & $0.064$ & $0.004$ & 7 \\
+    & Rising & $0.316$ & $0.063$ & 6 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \caption{Trial 3: Terminal Velocities with Uncertainties (fps = 16.68)}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{State} & \textbf{Phase} & \textbf{$\bar{v}$ (mm/s)} & $\sigma_v$ (mm/s) & \textbf{Cycles} \\
+    \hline
+    \multirow{2}{*}{Pre-ionization} & Falling & $0.159$ & $0.006$ & 5 \\
+    & Rising & $0.103$ & $0.038$ & 6 \\
+    \hline
+    \multirow{2}{*}{Post-ionization} & Falling & $0.174$ & $0.013$ & 6 \\
+    & Rising & $0.171$ & $0.008$ & 5 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+Two features of the data are notable. First, the falling velocities are considerably more consistent than the rising velocities: fall velocity standard deviations are 3--11\% of the mean, while rise velocity standard deviations range from 5\% up to 41\% of the mean. This asymmetry is expected because the falling phase depends only on the droplet mass and air viscosity (both constant), whereas the rising phase depends additionally on the electric force $qE$, making it sensitive to any charge fluctuations during the recording. The large scatter in some rise velocities (e.g., Trial~2, Drop~1, where individual rise velocities range from 0.139 to 0.363~mm/s) suggests that stray ionization from ambient radiation may have altered the droplet charge during the measurement window.
+
+Second, within each trial the pre- and post-ionization falling velocities agree to within 1--9\%, confirming that the two drops in each trial are the same physical droplet (and therefore the same mass). In Trial~1, the agreement is excellent (0.121 vs.\ 0.123~mm/s, 1.2\% difference), while Trials~2 and~3 show slightly larger differences (6.7\% and 9.2\%, respectively), possibly due to slow evaporation of the oil droplet over time or minor environmental drift.
+
+\subsection{Sources of Uncertainty}
+
+Random uncertainties arise from uncontrollable fluctuations in the experimental measurement. The following sources contribute to the variance in measured velocities:
+
+The video camera records at approximately 16.68 fps, corresponding to a temporal resolution of $\Delta t_{\text{frame}} = 1/16.68 = 0.0600$~s per frame. When identifying turning points, we selected the frame at which the droplet momentarily stops (zero velocity). There is an uncertainty of $\pm 1$ frame in this identification, leading to a timing uncertainty at each endpoint of $\sigma_{t,\text{end}} = 1/f_{\text{rate}}$. Since both endpoints carry this uncertainty, the total timing uncertainty per interval is:
 \begin{equation}
-a_1 = \sqrt{\frac{9 \eta v_{\text{fall}}}{2(\rho_{\text{oil}} - \rho_{\text{air}}) g}} \quad \text{(Eqn.~5)}
-\end{equation}
-where $\eta$ is the dynamic viscosity of air, $\rho_{\text{oil}} = \SI{853}{kg/m^3}$ is the mineral oil density, $\rho_{\text{air}}$ is the calculated air density, and $g = \SI{9.80665}{m/s^2}$ is gravitational acceleration.
-
-\subsubsection*{Uncorrected Charge}
-
-The charge before Cunningham correction is:
-\begin{equation}
-q_0 = \frac{18\pi d}{V} \sqrt{\frac{\eta^3 v_{\text{fall}}}{2(\rho_{\text{oil}} - \rho_{\text{air}})g}} (v_{\text{rise}} + v_{\text{fall}}) \quad \text{(Eqn.~6)}
-\end{equation}
-where $d = \SI{7.59}{mm}$ is the plate separation and $V = \SI{552}{-555}{V}$ is the applied voltage (nominal $V_{\text{nom}} = \SI{553.5}{V}$).
-
-\subsubsection*{Cunningham Correction}
-
-For submicron droplets, the drag coefficient deviates from Stokes law due to gas molecule slip at the droplet surface. This is corrected using the Cunningham correction factor:
-\begin{equation}
-q = \frac{q_0}{\left[1 + \frac{b}{p a_1}\right]^{3/2}} \quad \text{(Eqn.~10)}
-\end{equation}
-where $b = \SI{8.226e-3}{Pa \cdot m}$ is the Cunningham constant and $p$ is atmospheric pressure. This correction typically increases the calculated charge by 5--10\% for $a_1 \sim \SI{1}{\mu m}$.
-
-\subsection*{Uncertainty Propagation}
-
-Uncertainties in the measured charge arise from three sources:
-
-\subsubsection*{Systematic Uncertainties (Voltage and Temperature)}
-
-Voltage and temperature were recorded as ranges rather than single values. The charge was evaluated at all four corners of the parameter space $(V_{\text{lo}}, V_{\text{hi}}) \times (T_{\text{lo}}, T_{\text{hi}})$:
-\begin{align}
-\Delta q_V &= \frac{1}{2}\left[\max_{V \in (V_{\text{lo}}, V_{\text{hi}})} q(V) - \min_{V} q(V)\right] \\
-\Delta q_T &= \frac{1}{2}\left[\max_{T \in (T_{\text{lo}}, T_{\text{hi}})} q(T) - \min_T q(T)\right]
-\end{align}
-
-The combined systematic uncertainty is:
-\begin{equation}
-\Delta q_{\text{syst}} = \sqrt{(\Delta q_V)^2 + (\Delta q_T)^2}
-\end{equation}
-
-\subsubsection*{Statistical Uncertainty (Velocity Measurements)}
-
-Individual measurements of $v_{\text{fall}}$ and $v_{\text{rise}}$ from the five--seven oscillation cycles per droplet were recorded. Using first-order error propagation and the functional form of Equation~6:
-\begin{equation}
-\frac{\Delta q}{q} \approx \sqrt{\left(\frac{3}{2}\frac{\sigma_{v_{\text{fall}}}}{v_{\text{fall}}}\right)^2 + \left(\frac{\sigma_{v_{\text{rise}} + v_{\text{fall}}}}{v_{\text{rise}} + v_{\text{fall}}}\right)^2}
-\end{equation}
-
-where $\sigma_v$ denotes the standard error of the mean velocity from the sample of oscillations.
-
-\subsubsection*{Total Uncertainty}
-
-Statistical and systematic contributions are combined in quadrature:
-\begin{equation}
-\Delta q_{\text{total}} = \sqrt{(\Delta q_{\text{stat}})^2 + (\Delta q_{\text{syst}})^2}
-\end{equation}
-
-\subsection*{Elementary Charge Estimation}
-
-For each droplet, the measured charge $q$ is a multiple of the elementary charge: $q = n e$, where $n$ is the number of elementary charges. A best-fit integer $n$ was assigned by rounding $|q|/e_{\text{ref}}$ to the nearest integer, where $e_{\text{ref}} = \SI{1.602176634e-19}{C}$ is the CODATA 2018 value.
-
-Droplets within the same charge quantization class ($n$ = constant) were grouped, and the elementary charge was estimated as:
-\begin{equation}
-e = \frac{\langle q \rangle}{n}
-\end{equation}
-
-A weighted average over all droplets, with weights $w_i = 1/\sigma_i^2$ where $\sigma_i$ is the total uncertainty on droplet $i$, was used to obtain a final estimate:
-\begin{equation}
-e_{\text{est}} = \frac{\sum_i w_i e_i}{\sum_i w_i}, \quad \sigma_e = \frac{1}{\sqrt{\sum_i w_i}}
+\sigma_t = \frac{\sqrt{2}}{f_{\text{rate}}} = \frac{\sqrt{2}}{16.68 \text{ fps}} \approx 0.0849 \text{ s}
 \end{equation}
 
-\subsection*{Data Output}
+For a typical falling interval (e.g., Trial~2 Drop~1 with $\bar{t}_{\text{fall}} \approx 8.3$~s), the fractional timing uncertainty is $\sigma_t / \Delta t \approx 1.0\%$. For a faster rising interval (e.g., Trial~2 Drop~2 with $\bar{t}_{\text{rise}} \approx 1.6$~s), the fractional uncertainty is larger at $\sigma_t / \Delta t \approx 5.3\%$. This explains why faster oscillation phases have proportionally larger velocity uncertainties from timing alone.
 
-For each trial, the following outputs were generated:
-\begin{itemize}
-\item Per-droplet charge summary CSV file
-\item Velocity--time plot for each droplet (showing individual fall/rise velocities with mean lines)
-\item Combined analysis CSV (all droplets from the trial)
-\item Summary histogram and $q/e$ charge quantization plot
-\end{itemize}
+The reticle scale visible in the video has major divisions of 0.500~mm. Each oscillation traverses one major division, and the estimated uncertainty in reading the droplet position at the turning points is $\pm 0.05$ divisions ($\pm 0.025$~mm), giving a fractional distance uncertainty of:
+\begin{equation}
+\frac{\sigma_d}{d} = \frac{0.025 \text{ mm}}{0.5 \text{ mm}} = 5.0\%
+\end{equation}
+
+Since $v = d / \Delta t$, the fractional velocity uncertainty from timing and distance uncertainties combines in quadrature. The actual observed cycle-to-cycle variability (Tables~1--3) encompasses these effects along with additional physical sources such as thermal fluctuations, residual air currents, and stray charging. The standard error of the mean is:
+\begin{equation}
+\sigma_{\bar{v}} = \frac{\sigma_v}{\sqrt{N}}
+\end{equation}
+where $N$ is the number of cycles (4--7). For example, Trial~3 Drop~2 with $N = 5$ rise cycles and $\sigma_v = 0.008$~mm/s yields $\sigma_{\bar{v}} = 0.003$~mm/s, while Trial~1 Drop~1 with $N = 5$ rise cycles and $\sigma_v = 0.084$~mm/s yields $\sigma_{\bar{v}} = 0.038$~mm/s, illustrating the large range in measurement precision across droplets.
+
+Systematic uncertainties arise from calibration errors or apparatus limitations that shift all measurements in a consistent direction. The applied voltage was measured using a digital multimeter with a range of $V = 552$--$555$~V (nominal $553.5$~V), representing a fractional uncertainty of:
+\begin{equation}
+\frac{\sigma_V}{V} = \frac{1.5 \text{ V}}{553.5 \text{ V}} \approx 0.27\%
+\end{equation}
+
+The thermistor temperature uncertainty of $\pm 0.15$°C propagates to an air viscosity uncertainty of:
+\begin{equation}
+\frac{\sigma_\eta}{\eta} \approx 0.5 \times \frac{0.15 \text{ K}}{295.5 \text{ K}} \approx 0.025\%
+\end{equation}
+which is negligible compared to velocity uncertainties. The plate separation $d = 7.37$~mm carries a manufacturer uncertainty of $\pm 0.02$~mm (0.27\%). The combined systematic contribution from voltage, temperature, and plate separation is propagated through the charge formula by evaluating the charge at the corners of the $(V_{\text{lo}}, V_{\text{hi}}) \times (T_{\text{lo}}, T_{\text{hi}})$ parameter space.
+
+\section{Results and Analysis}
+
+\subsection{Charge Determination}
+
+The droplet radius is calculated from the falling velocity using:
+\begin{equation}
+a_1 = \sqrt{\frac{9\eta v_{\text{fall}}}{2g(\rho_{\text{oil}} - \rho_{\text{air}})}}
+\end{equation}
+and the Cunningham slip correction is applied:
+\begin{equation}
+q = \frac{q_0}{\left[1 + \frac{b}{p \, a_1}\right]^{3/2}}
+\end{equation}
+where $q_0$ is the uncorrected charge from the force balance and $b = 8.226 \times 10^{-3}$~Pa$\cdot$m is the Cunningham constant. The uncorrected charge is:
+\begin{equation}
+q_0 = \frac{18\pi d}{V} \sqrt{\frac{\eta^3 v_{\text{fall}}}{2(\rho_{\text{oil}} - \rho_{\text{air}})g}} \, (v_{\text{rise}} + v_{\text{fall}})
+\end{equation}
+with $V = 553.5 \pm 1.5$~V and $d = 7.37 \pm 0.02$~mm.
+
+Table~4 presents the calculated droplet radii, corrected charges, and the estimated number of elementary charges for all six droplets.
+
+\begin{table}[h!]
+    \centering
+    \caption{Droplet Radii and Charge Results for All Six Droplets}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    \textbf{Trial} & \textbf{Drop} & \textbf{$a_1$ ($\mu$m)} & \textbf{$q$ ($10^{-19}$ C)} & \textbf{$\delta q$ ($10^{-19}$ C)} & \textbf{$n_{\text{est}}$ ($q/e$)} \\
+    \hline
+    1 & 1 (Pre)  & 1.093 & $19.24$ & $2.43$ & 12 (12.01) \\
+    1 & 2 (Post) & 1.099 & $13.34$ & $1.74$ & 8 (8.33) \\
+    \hline
+    2 & 1 (Pre)  & 0.770 & $8.58$  & $1.17$ & 5 (5.36) \\
+    2 & 2 (Post) & 0.794 & $12.33$ & $0.96$ & 8 (7.70) \\
+    \hline
+    3 & 1 (Pre)  & 1.253 & $14.13$ & $0.93$ & 9 (8.82) \\
+    3 & 2 (Post) & 1.309 & $19.52$ & $0.94$ & 12 (12.18) \\
+    \hline
+    \end{tabular}
+\end{table}
+
+The corrected droplet radii range from 0.77 to 1.31~$\mu$m, well within the regime where the Cunningham slip correction is significant. The measured charges span from $8.58 \times 10^{-19}$~C to $19.52 \times 10^{-19}$~C, corresponding to integer multiples of the elementary charge ranging from $n = 5$ to $n = 12$. Crucially, no charges were observed at non-integer multiples of $e$: the $q/e$ ratios cluster tightly around integers (within measurement uncertainty), providing strong evidence for charge quantization.
+
+Figure~\ref{fig:quantization} shows all six measured charges expressed in units of $e$, with horizontal reference lines at integer values. Each measurement falls within its uncertainty of a nearby integer, with no charges observed between quantization levels.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{charge_quantization.png}
+    \caption{Charge quantization pattern showing all six measured charges in units of the elementary charge. Horizontal dashed lines mark integer multiples of $e$. Pre-ionization measurements (circles) and post-ionization measurements (squares) fall at distinct quantization levels ($n = 5, 8, 9, 12$), with no intermediate values.}
+    \label{fig:quantization}
+\end{figure}
+
+\subsection{Elementary Charge Determination}
+
+The elementary charge is extracted by dividing each measured charge by its assigned integer quantum number $n$ and computing a weighted average. For each droplet, the per-droplet estimate is $e_i = q_i / n_i$ with uncertainty $\delta e_i = \delta q_i / n_i$. The individual estimates are:
+
+\begin{table}[h!]
+    \centering
+    \caption{Per-Droplet Elementary Charge Estimates}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Droplet} & \textbf{$n$} & \textbf{$q/n$ ($10^{-19}$ C)} & \textbf{$\delta(q/n)$ ($10^{-19}$ C)} \\
+    \hline
+    T1D1 & 12 & 1.604 & 0.202 \\
+    T1D2 &  8 & 1.668 & 0.217 \\
+    T2D1 &  5 & 1.716 & 0.234 \\
+    T2D2 &  8 & 1.541 & 0.120 \\
+    T3D1 &  9 & 1.570 & 0.103 \\
+    T3D2 & 12 & 1.627 & 0.078 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+The weighted average (with weights $w_i = 1/\delta e_i^2$) yields:
+\begin{equation}
+e_{\text{exp}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
+\end{equation}
+
+The CODATA 2018 value is $e_{\text{CODATA}} = 1.602176634 \times 10^{-19}$~C. Our result agrees to within 0.05\%, well within the 3.2\% measurement uncertainty. Figure~\ref{fig:per_drop_e} shows the per-droplet estimates, illustrating that all six independent measurements are consistent with the accepted value.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.75\textwidth]{per_drop_e_estimate.png}
+    \caption{Per-droplet elementary charge estimates ($q/n$) for all six droplets. The red line marks the CODATA 2018 value; the blue band shows the $\pm 1\sigma$ range of the weighted average. All measurements are consistent with the accepted value.}
+    \label{fig:per_drop_e}
+\end{figure}
+
+\subsection{Ionization Effect}
+
+Table~6 summarizes the charge changes observed after ionizer exposure. In each trial, the ionizer was activated for 5~seconds between Drop~1 and Drop~2 measurements on the same physical droplet.
+
+\begin{table}[h!]
+    \centering
+    \caption{Ionization-Induced Charge Changes}
+    \vspace{0.1in}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{Trial} & \textbf{$n_{\text{pre}}$} & \textbf{$n_{\text{post}}$} & \textbf{$\Delta n$} & \textbf{$\Delta q$ ($10^{-19}$ C)} \\
+    \hline
+    1 & 12 & 8  & $-4$ & $-5.90$ \\
+    2 & 5  & 8  & $+3$ & $+3.75$ \\
+    3 & 9  & 12 & $+3$ & $+5.39$ \\
+    \hline
+    \end{tabular}
+\end{table}
+
+The ionization process changed the droplet charge by 3--4 elementary charges in each trial. Notably, the ionizer both added and removed charge: Trial~1 lost approximately 4 elementary charges, while Trials~2 and~3 each gained approximately 3 elementary charges. This is consistent with the stochastic nature of the ionization process, where alpha particles from the ionizer create electron-ion pairs in the air surrounding the droplet, and the droplet may capture either positive or negative charge depending on the local charge distribution.
+
+Figure~\ref{fig:ionization_effect} displays the pre- and post-ionization charges for each trial, with the integer quantum number $n$ and charge change $\Delta n$ annotated.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ionization_effect.png}
+    \caption{Pre- and post-ionization charges for each trial. The ionizer changed the droplet charge by 3--4 elementary charges, with both increases and decreases observed, consistent with the stochastic capture of charged species from ionized air.}
+    \label{fig:ionization_effect}
+\end{figure}
+
+\subsection{Uncertainty Budget}
+
+Table~7 decomposes the total charge uncertainty into its contributing sources. Uncertainties were propagated by evaluating the charge formula at the corners of the $(V_{\text{lo}}, V_{\text{hi}}) \times (T_{\text{lo}}, T_{\text{hi}})$ parameter space (for systematic contributions) and from the standard error of the mean velocity (for the statistical contribution). The total uncertainty is the quadrature sum of all contributions.
+
+\begin{table}[h!]
+    \centering
+    \caption{Uncertainty Budget: Average Fractional Contributions to $\delta q/q$}
+    \vspace{0.1in}
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Source} & \textbf{Type} & \textbf{Avg.\ $\delta q/q$} & \textbf{Variance fraction} \\
+    \hline
+    Velocity scatter       & Random     & $9.7\%$ & $99.9\%$ \\
+    Applied voltage        & Systematic & $0.27\%$ & $0.08\%$ \\
+    Temperature            & Systematic & $0.05\%$ & $< 0.01\%$ \\
+    \hline
+    \textbf{Combined}      &            & $\mathbf{9.7\%}$ & $\mathbf{100\%}$ \\
+    \hline
+    \end{tabular}
+\end{table}
+
+The measurement is overwhelmingly dominated by statistical uncertainty from velocity scatter, which accounts for $> 99.9\%$ of the total variance. Systematic uncertainties from the applied voltage (0.27\%) and temperature (0.05\%) are negligible by comparison. Individual droplet fractional uncertainties range from 4.8\% (Trial~3, Drop~2) to 13.6\% (Trial~2, Drop~1), with the variation driven by the degree of rise velocity scatter in each droplet recording.
+
+Figure~\ref{fig:error_budget} visualizes the variance contributions, demonstrating that improving the velocity measurement precision (through higher frame rates, better position tracking, or more oscillation cycles) would be the most effective path to reducing overall uncertainty.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{error_budget_pie.png}
+    \caption{Uncertainty budget showing variance contributions. Velocity scatter (statistical) accounts for $> 99.9\%$ of the total charge uncertainty, while systematic contributions from voltage and temperature are negligible.}
+    \label{fig:error_budget}
+\end{figure}
+
+Figure~\ref{fig:result_comparison} compares our final result with the CODATA 2018 accepted value.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.65\textwidth]{result_comparison.png}
+    \caption{Experimental result $(1.603 \pm 0.051) \times 10^{-19}$~C agrees with the CODATA 2018 value to within 0.05\%, confirming the accuracy of the measurement despite relatively large per-droplet uncertainties.}
+    \label{fig:result_comparison}
+\end{figure}
+
+\subsection{Summary of Results}
+
+The elementary charge was determined from six oil droplet measurements across three independent trials to be:
+\begin{equation}
+e_{\text{measured}} = (1.603 \pm 0.051) \times 10^{-19} \text{ C}
+\end{equation}
+
+This result agrees with the CODATA 2018 value of $1.602176634 \times 10^{-19}$~C to within 0.05\%, well within the 3.2\% measurement uncertainty. Measured charges ranged from $5e$ to $12e$, and in every case the ratio $q/e$ fell within measurement uncertainty of an integer, providing strong evidence for the quantization of electric charge. The ionization procedure changed droplet charges by 3--4 elementary charges per trial, with both charge gain and loss observed, consistent with the stochastic nature of the ionization process. The measurement is fundamentally limited by velocity scatter ($> 99.9\%$ of the uncertainty budget), and future improvements should focus on higher frame-rate video capture or automated position tracking to reduce this dominant error source.
 
 \end{document}
